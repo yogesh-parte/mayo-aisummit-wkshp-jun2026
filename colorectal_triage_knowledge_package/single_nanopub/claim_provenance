@@ -6,7 +6,7 @@ PREFIX this: <http://purl.org/np/RAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx>
 PREFIX sub: <http://purl.org/np/RAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#>
 
 CONSTRUCT {
-    # === Core Claims (Triage Framework) ===
+    # === Core Claims ===
     ?framework a ex:TriageFramework ;
                dcterms:title ?title ;
                ex:prioritizedFor ?priority ;
@@ -17,14 +17,14 @@ CONSTRUCT {
               ex:description ?desc ;
               ex:importance ?importance .
 
-    # === Link Claims to Provenance ===
+    # === Link to Provenance ===
     ?framework prov:wasDerivedFrom ?source ;
                prov:wasGeneratedBy ?activity ;
                prov:wasAttributedTo ?creator .
 
     ?decision prov:wasDerivedFrom ?source .
 
-    # === Detailed Provenance (PROV-O) ===
+    # === Detailed Provenance ===
     ?activity a prov:Activity ;
               prov:startedAtTime ?startTime ;
               prov:endedAtTime ?endTime ;
@@ -37,7 +37,7 @@ CONSTRUCT {
             prov:wasAttributedTo ?sourceAuthor .
 
     # Qualified relations
-    ?assertion prov:qualifiedDerivation ?qDeriv .
+    ?assn prov:qualifiedDerivation ?qDeriv .
     ?qDeriv a prov:Derivation ;
             prov:entity ?source ;
             prov:hadActivity ?activity .
@@ -68,9 +68,9 @@ WHERE {
 
     # === Extract Provenance ===
     GRAPH ?provenanceGraph {
-        ?assertion prov:wasDerivedFrom ?source .
-        ?assertion prov:wasAttributedTo ?creator .
-        ?assertion prov:wasGeneratedBy ?activity .   # if present
+        ?assn prov:wasDerivedFrom ?source .          # Changed variable name
+        ?assn prov:wasAttributedTo ?creator .
+        ?assn prov:wasGeneratedBy ?activity .
 
         ?activity a prov:Activity ;
                   prov:startedAtTime ?startTime ;
@@ -86,7 +86,7 @@ WHERE {
 
         # Qualified Derivation
         OPTIONAL {
-            ?assertion prov:qualifiedDerivation ?qDeriv .
+            ?assn prov:qualifiedDerivation ?qDeriv .
             ?qDeriv a prov:Derivation ;
                     prov:entity ?source ;
                     prov:hadActivity ?activity .
@@ -101,6 +101,6 @@ WHERE {
         }
     }
 
-    # Bind the main assertion
-    BIND(sub:assertion AS ?assertion)
+    # Optional: Bind assertion graph if needed elsewhere
+    BIND(?assertionGraph AS ?assn)
 }
