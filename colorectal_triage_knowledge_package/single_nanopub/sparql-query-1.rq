@@ -1,0 +1,87 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX np: <http://www.nanopub.org/nschema#>
+PREFIX ex: <http://example.org/ontology/colorectal-triage#>
+
+CONSTRUCT {
+    # === Framework ===
+    ?framework a ex:TriageFramework ;
+               dcterms:title ?title ;
+               ex:prioritizedFor ?priority ;
+               ex:hasDecisionPoint ?decision .
+
+    # === Decision Points ===
+    ?decision a ex:TriageDecisionPoint ;
+              ex:decision ?decisionLabel ;
+              ex:description ?desc ;
+              ex:importance ?importance ;
+              ex:partOf ?framework .
+
+    # === Provenance Links ===
+    ?framework prov:wasDerivedFrom ?source .
+    ?decision prov:wasDerivedFrom ?source .
+
+    ?framework prov:wasGeneratedBy ?activity .
+    ?decision prov:wasGeneratedBy ?activity .
+
+    # === Activity & Sources ===
+    ?activity a prov:Activity ;
+              prov:startedAtTime ?startTime ;
+              prov:wasAssociatedWith ?creator .
+
+    ?source a prov:Entity ;
+            dcterms:title ?sourceTitle .
+
+    # Additional useful visualization edges
+    ?nanopub a np:Nanopublication ;
+             np:hasAssertion ?assertionGraph .
+}
+WHERE {
+    # Find all relevant nanopublications
+    ?nanopub a np:Nanopublication ;
+             np:hasAssertion ?assertionGraph ;
+             np:hasProvenance ?provenanceGraph .
+
+    # Extract Framework
+    GRAPH ?assertionGraph {
+        ?framework a ex:TriageFramework ;
+                   dcterms:title ?title ;
+                   ex:prioritizedFor ?priority .
+        OPTIONAL { ?framework ex:hasDecisionPoint ?decision . }
+    }
+
+    # Extract Decision Points (from individual nanopubs)
+    GRAPH ?assertionGraph {
+        ?decision a ex:TriageDecisionPoint ;
+                  ex:decision ?decisionLabel ;
+                  ex:description ?desc ;
+                  ex:importance ?importance .
+        OPTIONAL { ?decision ex:partOf ?framework . }
+    }
+
+    # Extract Provenance (works across all nanopubs)
+    GRAPH ?provenanceGraph {
+        OPTIONAL { ?assertion prov:wasDerivedFrom ?source . }
+        OPTIONAL { 
+            ?nanopub prov:wasGeneratedBy ?activity .
+            ?activity a prov:Activity ;
+                      prov:startedAtTime ?startTime ;
+                      prov:wasAssociatedWith ?creator .
+        }
+        OPTIONAL {
+            ?source a prov:Entity ;
+                    dcterms:title ?sourceTitle .
+        }
+    }
+
+    # Fallback: link decision points to framework even if not explicitly stated
+    OPTIONAL {
+        ?decision ex:decision ?decisionLabel .
+        VALUES ?decisionLabel {
+            "Rectal vs. Colon"
+            "Metastatic vs. Non-metastatic"
+            "MMR/MSI status"
+            "Obstructing/Emergency presentation"
+        }
+    }
+}
