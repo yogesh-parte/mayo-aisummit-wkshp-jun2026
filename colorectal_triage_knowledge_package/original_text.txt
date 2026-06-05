@@ -1,0 +1,12 @@
+The following checklist provides a prioritized framework for colorectal cancer patient triage and scheduling, categorizing each data element as "Must Have" (essential for appropriate physician assignment) or "Good to Have" (enhances triage accuracy but not absolutely required for initial scheduling).
+
+Key Triage Decision Points:
+- Rectal vs. Colon: Rectal cancers typically require multidisciplinary evaluation (medical oncology, radiation oncology, surgical oncology) upfront, while colon cancers may go directly to surgical oncology if non-metastatic
+- Metastatic vs. Non-metastatic: Metastatic disease requires medical oncology evaluation with molecular testing complete; non-metastatic may prioritize surgical evaluation
+- MMR/MSI status: dMMR/MSI-H patients may be candidates for immunotherapy and follow different treatment algorithms
+- Obstructing/Emergency presentation: Requires urgent surgical consultation regardless of other factors
+
+References
+1. National Comprehensive Cancer Network. Colon Cancer (Version 2.2026)
+2. National Comprehensive Cancer Network. Rectal Cancer (Version 2.2026)
+3. Vogel JD, et al. The American Society of Colon and Rectal Surgeons Clinical Practice Guidelines for the Management of Colon Cancer. Dis Colon Rectum. 2022 Feb 1;65(2):148-177. doi: 10.1097/DCR.0000000000002323. PMID: 34775402.

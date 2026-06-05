@@ -1,0 +1,36 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix this: <http://purl.org/np/RAMetastaticVsNon> .
+@prefix sub: <http://purl.org/np/RAMetastaticVsNon#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix ex: <http://example.org/ontology/colorectal-triage#> .
+
+sub:Head {
+  this: a np:Nanopublication ;
+    np:hasAssertion sub:assertion ;
+    np:hasProvenance sub:provenance ;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  ex:MetastaticVsNonMetastatic a ex:TriageDecisionPoint ;
+    ex:decision "Metastatic vs. Non-metastatic" ;
+    ex:description "Metastatic disease requires medical oncology evaluation with molecular testing complete; non-metastatic may prioritize surgical evaluation" ;
+    ex:importance "Must Have" ;
+    ex:partOf ex:ColorectalTriageChecklist .
+}
+
+sub:provenance {
+  sub:assertion prov:wasDerivedFrom <https://www.nccn.org/professionals/physician_gls/pdf/colon.pdf>,
+                                    <https://www.nccn.org/professionals/physician_gls/pdf/rectal.pdf> .
+  this: prov:wasGeneratedBy :MetastaticActivity .
+  :MetastaticActivity a prov:Activity ;
+    prov:startedAtTime "2026-06-04T22:10:00"^^xsd:dateTime ;
+    prov:wasAssociatedWith <https://orcid.org/0000-0000-0000-0000> .
+}
+
+sub:pubinfo {
+  this: dcterms:created "2026-06-04T22:10:00"^^xsd:dateTime ;
+    dcterms:creator <https://orcid.org/0000-0000-0000-0000> .
+}

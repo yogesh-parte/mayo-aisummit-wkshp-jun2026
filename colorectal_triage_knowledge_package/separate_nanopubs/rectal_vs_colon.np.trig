@@ -1,0 +1,32 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix this: <http://purl.org/np/RARectalVsColonxxxxxxxxxxxxxxxxxxxx> .
+@prefix sub: <http://purl.org/np/RARectalVsColonxxxxxxxxxxxxxxxxxxxx#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix ex: <http://example.org/ontology/colorectal-triage#> .
+
+sub:Head {
+  this: a np:Nanopublication ;
+    np:hasAssertion sub:assertion ;
+    np:hasProvenance sub:provenance ;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  ex:RectalVsColon a ex:TriageDecisionPoint ;
+    ex:decision "Rectal vs. Colon" ;
+    ex:description "Rectal cancers typically require multidisciplinary evaluation (medical oncology, radiation oncology, surgical oncology) upfront, while colon cancers may go directly to surgical oncology if non-metastatic" ;
+    ex:importance "Must Have" ;
+    ex:partOf ex:ColorectalTriageChecklist .
+}
+
+sub:provenance {
+  sub:assertion prov:wasDerivedFrom <https://www.nccn.org/professionals/physician_gls/pdf/colon.pdf>,
+                                    <https://www.nccn.org/professionals/physician_gls/pdf/rectal.pdf> .
+}
+
+sub:pubinfo {
+  this: dcterms:created "2026-06-05T00:00:00"^^xsd:dateTime ;
+    dcterms:creator <https://orcid.org/0000-0000-0000-0000> .
+}

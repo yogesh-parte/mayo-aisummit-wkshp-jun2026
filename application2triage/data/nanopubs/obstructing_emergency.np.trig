@@ -1,0 +1,36 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix this: <http://purl.org/np/RAObstructingEmergency> .
+@prefix sub: <http://purl.org/np/RAObstructingEmergency#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix ex: <http://example.org/ontology/colorectal-triage#> .
+
+sub:Head {
+  this: a np:Nanopublication ;
+    np:hasAssertion sub:assertion ;
+    np:hasProvenance sub:provenance ;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  ex:ObstructingEmergency a ex:TriageDecisionPoint ;
+    ex:decision "Obstructing/Emergency presentation" ;
+    ex:description "Requires urgent surgical consultation regardless of other factors" ;
+    ex:importance "Must Have" ;
+    ex:partOf ex:ColorectalTriageChecklist .
+}
+
+sub:provenance {
+  sub:assertion prov:wasDerivedFrom <https://www.nccn.org/professionals/physician_gls/pdf/colon.pdf>,
+                                    <https://www.nccn.org/professionals/physician_gls/pdf/rectal.pdf> .
+  this: prov:wasGeneratedBy :EmergencyActivity .
+  :EmergencyActivity a prov:Activity ;
+    prov:startedAtTime "2026-06-04T22:10:00"^^xsd:dateTime ;
+    prov:wasAssociatedWith <https://orcid.org/0000-0000-0000-0000> .
+}
+
+sub:pubinfo {
+  this: dcterms:created "2026-06-04T22:10:00"^^xsd:dateTime ;
+    dcterms:creator <https://orcid.org/0000-0000-0000-0000> .
+}

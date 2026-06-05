@@ -1,0 +1,39 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix this: <http://purl.org/np/RAFrameworkColorectalTriage> .
+@prefix sub: <http://purl.org/np/RAFrameworkColorectalTriage#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix ex: <http://example.org/ontology/colorectal-triage#> .
+
+sub:Head {
+  this: a np:Nanopublication ;
+    np:hasAssertion sub:assertion ;
+    np:hasProvenance sub:provenance ;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  ex:ColorectalTriageChecklist a ex:TriageFramework ;
+    dcterms:title "Prioritized Framework for Colorectal Cancer Patient Triage and Scheduling" ;
+    ex:prioritizedFor "physician assignment and initial scheduling" ;
+    ex:hasDecisionPoint ex:RectalVsColon,
+                        ex:MetastaticVsNonMetastatic,
+                        ex:MMR_MSI_Status,
+                        ex:ObstructingEmergency .
+}
+
+sub:provenance {
+  sub:assertion prov:wasDerivedFrom <https://www.nccn.org/professionals/physician_gls/pdf/colon.pdf>,
+                                    <https://www.nccn.org/professionals/physician_gls/pdf/rectal.pdf>,
+                                    <https://doi.org/10.1097/DCR.0000000000002323> .
+  this: prov:wasGeneratedBy :FrameworkCreation .
+  :FrameworkCreation a prov:Activity ;
+    prov:startedAtTime "2026-06-04T22:10:00"^^xsd:dateTime ;
+    prov:wasAssociatedWith <https://orcid.org/0000-0000-0000-0000> .
+}
+
+sub:pubinfo {
+  this: dcterms:created "2026-06-04T22:10:00"^^xsd:dateTime ;
+    dcterms:creator <https://orcid.org/0000-0000-0000-0000> .
+}

@@ -1,0 +1,46 @@
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/fhir/> .
+
+# ====================== PATIENT ======================
+ex:Patient-12345 a fhir:Patient ;
+    fhir:id [ fhir:v "PATIENT-12345" ] ;
+    fhir:name [ fhir:text [ fhir:v "John Doe" ] ] .
+
+# ====================== COLORECTAL CANCER DIAGNOSIS (Rectal) ======================
+ex:Condition-Colon-Rectal a fhir:Condition ;
+    fhir:subject ex:Patient-12345 ;
+    fhir:code [
+        fhir:coding [
+            fhir:system [ fhir:v "http://hl7.org/fhir/sid/icd-10" ] ;
+            fhir:code [ fhir:v "C20" ] ;
+            fhir:display [ fhir:v "Malignant neoplasm of rectum" ]
+        ]
+    ] ;
+    fhir:clinicalStatus [
+        fhir:coding [
+            fhir:system [ fhir:v "http://terminology.hl7.org/CodeSystem/condition-clinical" ] ;
+            fhir:code [ fhir:v "active" ]
+        ]
+    ] ;
+    fhir:stage [
+        fhir:summary [ fhir:text [ fhir:v "Stage III" ] ]
+    ] .
+
+# ====================== MSI / MMR STATUS ======================
+ex:Observation-MSI a fhir:Observation ;
+    fhir:subject ex:Patient-12345 ;
+    fhir:code [
+        fhir:coding [
+            fhir:system [ fhir:v "http://loinc.org" ] ;
+            fhir:code [ fhir:v "82939-0" ] ;
+            fhir:display [ fhir:v "Microsatellite instability" ]
+        ]
+    ] ;
+    fhir:valueCodeableConcept [
+        fhir:coding [
+            fhir:code [ fhir:v "MSI-H" ] ;
+            fhir:display [ fhir:v "MSI-High" ]
+        ]
+    ] ;
+    fhir:status [ fhir:v "final" ] .
