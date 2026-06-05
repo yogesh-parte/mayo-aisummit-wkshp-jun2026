@@ -1,106 +1,57 @@
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX np: <http://www.nanopub.org/nschema#>
-PREFIX ex: <http://example.org/ontology/colorectal-triage#>
-PREFIX this: <http://purl.org/np/RAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx>
-PREFIX sub: <http://purl.org/np/RAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#>
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/fhir/> .
 
-CONSTRUCT {
-    # === Core Claims ===
-    ?framework a ex:TriageFramework ;
-               dcterms:title ?title ;
-               ex:prioritizedFor ?priority ;
-               ex:hasDecisionPoint ?decision .
+# ====================== PATIENT ======================
+ex:Patient-12345 a fhir:Patient ;
+    fhir:nodeRole fhir:treeRoot ;
+    fhir:id [ fhir:v "PATIENT-12345" ] ;
+    fhir:name ( [ 
+        fhir:text [ fhir:v "John Doe" ] 
+    ] ) .
 
-    ?decision a ex:TriageDecisionPoint ;
-              ex:decision ?decisionLabel ;
-              ex:description ?desc ;
-              ex:importance ?importance .
+# ====================== COLORECTAL CANCER DIAGNOSIS (Rectal) ======================
+ex:Condition-Colon-Rectal a fhir:Condition ;
+    fhir:nodeRole fhir:treeRoot ;
+    fhir:subject [ 
+        fhir:link ex:Patient-12345 
+    ] ;
+    fhir:code [
+        fhir:coding ( [
+            fhir:system [ fhir:v "http://hl7.org/fhir/sid/icd-10"^^xsd:anyURI ] ;
+            fhir:code [ fhir:v "C20" ] ;
+            fhir:display [ fhir:v "Malignant neoplasm of rectum" ]
+        ] )
+    ] ;
+    fhir:clinicalStatus [
+        fhir:coding ( [
+            fhir:system [ fhir:v "http://terminology.hl7.org/CodeSystem/condition-clinical"^^xsd:anyURI ] ;
+            fhir:code [ fhir:v "active" ]
+        ] )
+    ] ;
+    fhir:stage ( [
+        fhir:summary [ fhir:text [ fhir:v "Stage III" ] ]
+    ] ) .
 
-    # === Link to Provenance ===
-    ?framework prov:wasDerivedFrom ?source ;
-               prov:wasGeneratedBy ?activity ;
-               prov:wasAttributedTo ?creator .
-
-    ?decision prov:wasDerivedFrom ?source .
-
-    # === Detailed Provenance ===
-    ?activity a prov:Activity ;
-              prov:startedAtTime ?startTime ;
-              prov:endedAtTime ?endTime ;
-              prov:wasAssociatedWith ?agent ;
-              prov:used ?source .
-
-    ?source a prov:Entity ;
-            dcterms:title ?sourceTitle ;
-            dcterms:issued ?issued ;
-            prov:wasAttributedTo ?sourceAuthor .
-
-    # Qualified relations
-    ?assn prov:qualifiedDerivation ?qDeriv .
-    ?qDeriv a prov:Derivation ;
-            prov:entity ?source ;
-            prov:hadActivity ?activity .
-
-    ?activity prov:qualifiedAssociation ?qAssoc .
-    ?qAssoc a prov:Association ;
-            prov:agent ?agent ;
-            prov:hadRole ?role .
-}
-WHERE {
-    # Find the Nanopublication
-    this: a np:Nanopublication ;
-          np:hasAssertion ?assertionGraph ;
-          np:hasProvenance ?provenanceGraph ;
-          np:hasPublicationInfo ?pubinfoGraph .
-
-    # === Extract Assertions (Claims) ===
-    GRAPH ?assertionGraph {
-        ?framework a ex:TriageFramework ;
-                   dcterms:title ?title ;
-                   ex:prioritizedFor ?priority .
-
-        ?decision a ex:TriageDecisionPoint ;
-                  ex:decision ?decisionLabel ;
-                  ex:description ?desc ;
-                  ex:importance ?importance .
-    }
-
-    # === Extract Provenance ===
-    GRAPH ?provenanceGraph {
-        ?assn prov:wasDerivedFrom ?source .          # Changed variable name
-        ?assn prov:wasAttributedTo ?creator .
-        ?assn prov:wasGeneratedBy ?activity .
-
-        ?activity a prov:Activity ;
-                  prov:startedAtTime ?startTime ;
-                  prov:endedAtTime ?endTime ;
-                  prov:wasAssociatedWith ?agent ;
-                  prov:used ?source .
-
-        ?source a prov:Entity ;
-                dcterms:title ?sourceTitle .
-
-        OPTIONAL { ?source dcterms:issued ?issued . }
-        OPTIONAL { ?source prov:wasAttributedTo ?sourceAuthor . }
-
-        # Qualified Derivation
-        OPTIONAL {
-            ?assn prov:qualifiedDerivation ?qDeriv .
-            ?qDeriv a prov:Derivation ;
-                    prov:entity ?source ;
-                    prov:hadActivity ?activity .
-        }
-
-        # Qualified Association
-        OPTIONAL {
-            ?activity prov:qualifiedAssociation ?qAssoc .
-            ?qAssoc a prov:Association ;
-                    prov:agent ?agent ;
-                    prov:hadRole ?role .
-        }
-    }
-
-    # Optional: Bind assertion graph if needed elsewhere
-    BIND(?assertionGraph AS ?assn)
-}
+# ====================== MSI / MMR STATUS ======================
+ex:Observation-MSI a fhir:Observation ;
+    fhir:nodeRole fhir:treeRoot ;
+    fhir:status [ fhir:v "final" ] ;
+    fhir:subject [ 
+        fhir:link ex:Patient-12345 
+    ] ;
+    fhir:code [
+        fhir:coding ( [
+            fhir:system [ fhir:v "http://loinc.org"^^xsd:anyURI ] ;
+            fhir:code [ fhir:v "81695-9" ] ;
+            fhir:display [ fhir:v "Microsatellite instability [Interpretation] in Cancer specimen Qualitative" ]
+        ] )
+    ] ;
+   fhir:valueCodeableConcept [ 
+        fhir:coding ( [ 
+            fhir:system [ fhir:v "http://snomed.info/sct"^^xsd:anyURI ] ;
+            # Standardized SNOMED concept for the qualitative result value
+            fhir:code [ fhir:v "1200213000" ] ; 
+            fhir:display [ fhir:v "Microsatellite instability-high" ] 
+        ] ) 
+    ] .
