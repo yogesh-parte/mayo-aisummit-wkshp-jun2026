@@ -1,0 +1,106 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX np: <http://www.nanopub.org/nschema#>
+PREFIX ex: <http://example.org/ontology/colorectal-triage#>
+PREFIX this: <http://purl.org/np/RAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx>
+PREFIX sub: <http://purl.org/np/RAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#>
+
+CONSTRUCT {
+    # === Core Claims (Triage Framework) ===
+    ?framework a ex:TriageFramework ;
+               dcterms:title ?title ;
+               ex:prioritizedFor ?priority ;
+               ex:hasDecisionPoint ?decision .
+
+    ?decision a ex:TriageDecisionPoint ;
+              ex:decision ?decisionLabel ;
+              ex:description ?desc ;
+              ex:importance ?importance .
+
+    # === Link Claims to Provenance ===
+    ?framework prov:wasDerivedFrom ?source ;
+               prov:wasGeneratedBy ?activity ;
+               prov:wasAttributedTo ?creator .
+
+    ?decision prov:wasDerivedFrom ?source .
+
+    # === Detailed Provenance (PROV-O) ===
+    ?activity a prov:Activity ;
+              prov:startedAtTime ?startTime ;
+              prov:endedAtTime ?endTime ;
+              prov:wasAssociatedWith ?agent ;
+              prov:used ?source .
+
+    ?source a prov:Entity ;
+            dcterms:title ?sourceTitle ;
+            dcterms:issued ?issued ;
+            prov:wasAttributedTo ?sourceAuthor .
+
+    # Qualified relations
+    ?assertion prov:qualifiedDerivation ?qDeriv .
+    ?qDeriv a prov:Derivation ;
+            prov:entity ?source ;
+            prov:hadActivity ?activity .
+
+    ?activity prov:qualifiedAssociation ?qAssoc .
+    ?qAssoc a prov:Association ;
+            prov:agent ?agent ;
+            prov:hadRole ?role .
+}
+WHERE {
+    # Find the Nanopublication
+    this: a np:Nanopublication ;
+          np:hasAssertion ?assertionGraph ;
+          np:hasProvenance ?provenanceGraph ;
+          np:hasPublicationInfo ?pubinfoGraph .
+
+    # === Extract Assertions (Claims) ===
+    GRAPH ?assertionGraph {
+        ?framework a ex:TriageFramework ;
+                   dcterms:title ?title ;
+                   ex:prioritizedFor ?priority .
+
+        ?decision a ex:TriageDecisionPoint ;
+                  ex:decision ?decisionLabel ;
+                  ex:description ?desc ;
+                  ex:importance ?importance .
+    }
+
+    # === Extract Provenance ===
+    GRAPH ?provenanceGraph {
+        ?assertion prov:wasDerivedFrom ?source .
+        ?assertion prov:wasAttributedTo ?creator .
+        ?assertion prov:wasGeneratedBy ?activity .   # if present
+
+        ?activity a prov:Activity ;
+                  prov:startedAtTime ?startTime ;
+                  prov:endedAtTime ?endTime ;
+                  prov:wasAssociatedWith ?agent ;
+                  prov:used ?source .
+
+        ?source a prov:Entity ;
+                dcterms:title ?sourceTitle .
+
+        OPTIONAL { ?source dcterms:issued ?issued . }
+        OPTIONAL { ?source prov:wasAttributedTo ?sourceAuthor . }
+
+        # Qualified Derivation
+        OPTIONAL {
+            ?assertion prov:qualifiedDerivation ?qDeriv .
+            ?qDeriv a prov:Derivation ;
+                    prov:entity ?source ;
+                    prov:hadActivity ?activity .
+        }
+
+        # Qualified Association
+        OPTIONAL {
+            ?activity prov:qualifiedAssociation ?qAssoc .
+            ?qAssoc a prov:Association ;
+                    prov:agent ?agent ;
+                    prov:hadRole ?role .
+        }
+    }
+
+    # Bind the main assertion
+    BIND(sub:assertion AS ?assertion)
+}
